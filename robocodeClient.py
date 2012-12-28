@@ -12,10 +12,17 @@ class MyClient(basic.LineReceiver):
 
     def connectionMade(self):
         print "connected!"
-        self.transport.write(json.dumps({'action': 'enter'}))
-
+        self.transport.write(json.dumps({
+                    "action": "create",
+                    "params": {
+                        "room_name": "Room 1"}
+                    }))
     def lineReceived(self, line):
-        print "line recveived on server-client1.py",line
+        response = json.loads(line)
+        if not response.get('content'):
+            self.transport.write(json.dumps({'action': 'enter'}))
+        else:
+            print response
 
 class MyClientFactory(protocol.ClientFactory):
     protocol = MyClient
